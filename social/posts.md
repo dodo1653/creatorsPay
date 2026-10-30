@@ -1,67 +1,77 @@
 # CreatorPay posts (short, factual, one job each, no emoji)
 
 Bio:
-Get paid per view. Creators fund campaigns in SOL; clippers post on X; verified views pay out every hour. Independent, not affiliated with pump.fun.
+Clipping campaigns for pump.fun Creators. Fund in SOL, get clips on X, pay per verified view. Independent, not affiliated with pump.fun.
 
 ---
 
-0. Teaser (before launch, with the film)
+1. Launch (quote-tweet pump.fun's announcement x.com/Pumpfun/status/2116253806455599394, with the film)
 
-pump.fun pays creators for every trader they bring.
+pump.fun just announced Creators: get paid for every trader your content brings.
 
-We pay the clippers who bring them.
+So we built the part that makes the content.
 
-Soon.
-
----
-
-1. Launch (with the film)
-
-$CREATORPAY is live.
-
-Creators fund a campaign in SOL. Clippers post short videos on X with the creator's pump.fun link. Every hour, verified views pay out from the campaign's own escrow.
+$CREATORPAY is live. Creators fund a campaign in SOL, clippers post short videos on X with their pump.fun link, and verified views pay out every hour.
 
 <site>
 CA: <CA>
 
 ---
 
-2. How a payout works
+2. Why now
 
-One campaign, one escrow address on Solana.
+pump.fun Creators pays a share of every trader you bring, for life. The $100K competition opens Nov 2.
 
-The keeper reads each clip's public view count every 10 minutes and pays the clipper every hour, at the campaign's rate per 1,000 views.
+One account only reaches so far. With CreatorPay a creator pays a crowd of clippers to post their link.
 
-Every payout is a Solana transaction with a memo: campaign, clip, views.
+Live now, before it opens.
 
 ---
 
-3. The rules
+3. For pump.fun creators
+
+Got your pump.fun/join link?
+
+Open a campaign, set a rate per 1,000 views, deposit SOL. Unspent SOL comes back to you when it ends.
+
+<site>
+
+---
+
+4. For clippers
+
+Clip, post on X with the campaign's pump.fun link, paste the post on CreatorPay.
+
+Views are read from X every 10 minutes. Payouts every hour, straight to your wallet.
+
+---
+
+5. Receipts
+
+Every payout is a Solana transaction from the campaign's escrow, with a memo: campaign, clip, views paid.
+
+Anyone can rebuild the ledger from the chain.
+
+---
+
+6. The rules
 
 X accounts 30+ days old.
-Video of 10 seconds or more, with the campaign's pump.fun link in the post.
+Video of 10 seconds or more, pump.fun link in the post.
 One account takes at most 20% of a campaign.
 Views without engagement are held.
-Unspent SOL goes back to the creator.
 
 ---
 
-4. The token
+7. The token
 
-5% on top of every payout goes to the protocol wallet. It buys $CREATORPAY and burns it.
+5% on top of every payout goes to the protocol wallet, which buys $CREATORPAY and burns it.
 
-Protocol wallet: <protocol wallet>
-
----
-
-5. First payout (receipt, once it happens)
-
-First CreatorPay payout: <n> SOL to @<clipper> for <views> views.
-<solscan tx>
+D8pa12DQrm58XpSFthAgyhBahAiTjJn3WeS6iWD3BLKF
 
 ---
 
-6. CA
+8. CA
 
 Our official CA:
 <CA>
@@ -69,6 +79,6 @@ Our official CA:
 ---
 
 Notes
-- Post 0/1 carry the film (promo/out/creatorpay-40s.mp4). Post 2 a screenshot of a campaign card. Post 5 only after a real payout lands.
-- Every post says nothing that isn't true on chain or in the code. No made-up numbers.
-- Disclaimer stays in the bio: not affiliated with pump.fun.
+- Post 1 carries the film (promo/out/creatorpay-40s.mp4). Post 3 a screenshot of the open-campaign form.
+- After the first real payout: "First CreatorPay payout: <n> SOL to @<clipper> for <views> views." + Solscan link.
+- Never claim partnership: the bio keeps "Independent, not affiliated with pump.fun". "Built for pump.fun Creators" describes who it's for, nothing more.
