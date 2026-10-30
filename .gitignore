@@ -7,3 +7,5 @@ relay/.data/
 promo/frames*/
 promo/out/
 promo/music.wav
+promo/*.log
+promo/music_preview.mp3
