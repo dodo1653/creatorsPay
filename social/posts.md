@@ -14,7 +14,7 @@ So we built the part that makes the content.
 $CREATORPAY is live. Creators fund a campaign in SOL, clippers post short videos on X with their pump.fun link, and verified views pay out every hour.
 
 creatorsonpump.vercel.app
-CA: <CA>
+CA: 3pYtuiRKVLtdqdHSd6cQKkjHwcnSWjVmNitdWFwapump
 
 ---
 
@@ -74,7 +74,7 @@ D8pa12DQrm58XpSFthAgyhBahAiTjJn3WeS6iWD3BLKF
 8. CA
 
 Our official CA:
-<CA>
+3pYtuiRKVLtdqdHSd6cQKkjHwcnSWjVmNitdWFwapump
 
 ---
 
