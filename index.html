@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CreatorPay · Get paid per view</title>
+<meta name="description" content="Creators fund a campaign in SOL. Clippers post short videos on X with the creator's pump.fun link. Every hour, verified views pay out from the campaign's own escrow.">
+<meta property="og:title" content="CreatorPay · Get paid per view">
+<meta property="og:description" content="Pay-per-view clipping for pump.fun creators. Escrowed in SOL, paid hourly on verified X views.">
+<meta property="og:image" content="assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#07080a">
+<link rel="icon" href="assets/icon.png">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="cp.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs><symbol id="mk" viewBox="0 0 32 32"><path fill-rule="evenodd" d="M16 2a14 14 0 1 1 0 28a14 14 0 0 1 0-28Zm-3.2 8.4c-.9-.5-2 .1-2 1.2v8.8c0 1.1 1.1 1.7 2 1.2l7.6-4.4c.9-.5.9-1.9 0-2.4Z"/></symbol></defs>
+</svg>
+
+<header class="top">
+  <a class="brand" href="#"><svg class="mk"><use href="#mk"/></svg><span>CreatorPay</span></a>
+  <nav><a href="#campaigns">Campaigns</a><a href="#clips">Clips</a><a href="#payouts">Payouts</a><a href="#how">How it works</a><a href="#token">$CREATORPAY</a></nav>
+  <button class="btn ghost sm" id="wallet">Connect wallet</button>
+</header>
+
+<section class="hero">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <a class="pill" href="#why"><i></i>Built for the pump.fun Creator Program era</a>
+    <h1>Get paid<br><em>per view.</em></h1>
+    <p class="lead">Creators fund a campaign in SOL. Clippers post short videos on X with the creator's pump.fun link. Every hour, verified views pay out from the campaign's own escrow.</p>
+    <div class="cta"><a class="btn" href="#clippers">Submit a clip</a><a class="btn ghost" href="#creators">Open a campaign</a></div>
+  </div>
+
+  <div class="stage" id="stage">
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+    <div class="slots left" id="slotsL"></div>
+    <div class="core">
+      <div class="ring r1"></div><div class="ring r2"></div>
+      <div class="coin"><img src="assets/coin.png" alt="" onerror="this.remove()"><svg class="mk fallback"><use href="#mk"/></svg></div>
+      <div class="core-tag"><small>escrow, all campaigns</small><b id="hFunded">0 SOL</b></div>
+    </div>
+    <div class="slots right" id="slotsR"></div>
+  </div>
+
+  <div class="totals" id="totals">
+    <div><small>Funded</small><b data-k="funded">0</b><span>SOL in escrow, all time</span></div>
+    <div><small>Paid out</small><b data-k="paid">0</b><span>SOL to clippers</span></div>
+    <div><small>Verified views</small><b data-k="views">0</b><span>read from X, public</span></div>
+    <div><small>Clips</small><b data-k="clips">0</b><span>accepted posts</span></div>
+    <div><small>Clippers</small><b data-k="clippers">0</b><span>X accounts paid to wallets</span></div>
+  </div>
+  <p class="fine">Independent. Not affiliated with, sponsored or endorsed by pump.fun.</p>
+</section>
+
+<section class="sec why" id="why">
+  <div class="sh"><h2>Reach is the bottleneck.</h2><p>pump.fun's Creator Program pays approved creators a lifetime share of the trading fees of every trader they refer, and a $100,000 competition runs November 2 to 16, ranked by new referred volume. One creator can only post so much. CreatorPay lets them buy reach the way brands already do: a crowd of clippers, paid per verified view.</p></div>
+</section>
+
+<section class="sec" id="campaigns">
+  <div class="sh"><h2>Live campaigns</h2><p>Each campaign has its own escrow address on Solana. Its balance, every payout and the refund of what is left are public transactions.</p></div>
+  <div class="cards" id="campList"></div>
+</section>
+
+<section class="sec" id="clips">
+  <div class="sh"><h2>Top clips</h2><p>View counts are re-read from X's public data every <span data-r="checkMin">10</span> minutes. Payouts settle every <span data-r="settleMin">60</span>.</p></div>
+  <div class="table" id="clipTable"></div>
+</section>
+
+<section class="sec" id="payouts">
+  <div class="sh"><h2>Payouts</h2><p>Every payout is one Solana transaction from a campaign's escrow, with a memo naming the campaign and each clip with the views it pays for: <code>CreatorPay &lt;campaign&gt; | &lt;clip&gt;:&lt;views&gt;</code>.</p></div>
+  <div class="table" id="payTable"></div>
+</section>
+
+<section class="sec" id="how">
+  <div class="sh"><h2>How it works</h2><p>No accounts, no forms to trust. A signed message opens a campaign, a post on X links a clipper's wallet, and the chain keeps the books.</p></div>
+  <div class="steps">
+    <div><b>01</b><h3>Fund</h3><p>A creator signs a campaign (title, their pump.fun link, a rate per 1,000 views, how many days) and sends SOL to its own escrow address.</p></div>
+    <div><b>02</b><h3>Clip</h3><p>Clippers post short videos on X that include the campaign's link, then submit the post. Their X account is linked once to a wallet by a post.</p></div>
+    <div><b>03</b><h3>Verify</h3><p>The keeper re-reads each post's public view count, likes, replies and reposts, and holds anything that looks bought.</p></div>
+    <div><b>04</b><h3>Pay</h3><p>Every hour, new views are paid from the escrow at the campaign's rate. When it ends, what is left goes back to the creator.</p></div>
+  </div>
+  <div class="rules" id="rules"></div>
+</section>
+
+<section class="sec two" id="join">
+  <div class="panel" id="clippers">
+    <h2>For clippers</h2>
+    <p class="muted">Link your X account once, then submit clips to any live campaign.</p>
+    <ol class="flow">
+      <li><span>1</span><div><b>Connect your wallet</b><small>The Solana wallet you want to be paid to.</small><button class="btn ghost sm" data-connect>Connect wallet</button></div></li>
+      <li><span>2</span><div><b>Post your wallet on X</b><small>From the account you clip with. Any post containing the address works.</small><a class="btn ghost sm" id="intent" target="_blank" rel="noopener">Post on X</a></div></li>
+      <li><span>3</span><div><b>Link that post</b><div class="row"><input id="bindUrl" placeholder="https://x.com/you/status/…"><button class="btn sm" id="bindGo">Link</button></div><small class="out" id="bindOut"></small></div></li>
+    </ol>
+    <div class="sub">
+      <b>Submit a clip</b>
+      <label>Campaign<select id="clipCamp"></select></label>
+      <label>Your post on X<input id="clipUrl" placeholder="https://x.com/you/status/…"></label>
+      <button class="btn wide" id="clipGo">Submit clip</button>
+      <small class="out" id="clipOut"></small>
+    </div>
+  </div>
+
+  <div class="panel" id="creators">
+    <h2>For creators</h2>
+    <p class="muted">Open a campaign around your pump.fun link. You only pay for views that happen.</p>
+    <div class="form">
+      <label>Title<input id="cTitle" maxlength="60" placeholder="Get your friends on pump.fun"></label>
+      <label>Your pump.fun link<input id="cLink" placeholder="pump.fun/join/yourname"><small>pump.fun/join/…, pump.fun/coin/… or pump.fun/profile/…</small></label>
+      <div class="two-f">
+        <label>Rate<input id="cRate" type="number" step="0.001" min="0.001" value="0.01"><small>SOL per 1,000 views</small></label>
+        <label>Runs<input id="cDays" type="number" step="1" min="1" max="30" value="14"><small>days</small></label>
+      </div>
+      <label>Deposit<input id="cDep" type="number" step="0.01" min="0.05" value="1"><small id="cMath">SOL into the campaign's escrow</small></label>
+      <button class="btn wide" id="cGo">Sign and open the campaign</button>
+      <small class="out" id="cOut"></small>
+    </div>
+  </div>
+</section>
+
+<section class="sec token" id="token">
+  <div class="tk">
+    <div class="tk-img"><svg class="mk fallback"><use href="#mk"/></svg><img src="assets/coin.png" alt="$CREATORPAY" onerror="this.remove()"></div>
+    <div>
+      <small>$CREATORPAY</small>
+      <h2>Every payout burns it.</h2>
+      <p>On top of what clippers earn, <b data-r="feePct">5 %</b> of every payout goes to the protocol wallet. Each week that SOL buys $CREATORPAY and burns it, with the swap and the burn posted here.</p>
+      <dl>
+        <div><dt>CA</dt><dd id="tkCa">soon</dd></div>
+        <div><dt>Protocol wallet</dt><dd id="tkWallet">…</dd></div>
+        <div><dt>Collected</dt><dd id="tkFees">0 SOL</dd></div>
+        <div><dt>Burned</dt><dd>first burn after the first fees</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="brand"><svg class="mk"><use href="#mk"/></svg>CreatorPay</span>
+  <span>Independent. Not affiliated with, sponsored or endorsed by pump.fun. View counts come from X's public data; payouts are Solana transactions anyone can check. Memecoins are extremely risky.</span>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script src="assets/app.js"></script>
+<script src="cp.js"></script>
+</body>
+</html>
