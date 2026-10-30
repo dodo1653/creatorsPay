@@ -15,58 +15,27 @@
   const out = (id, t, cls = '') => { const el = $(id); el.className = 'out ' + cls; el.innerHTML = t }
   let S = null
 
-  // ---------------------------------------------------------------- hero: escrow in the middle, the top clips around it
-  function clipCard(k) {
-    if (!k) return `<div class="clip empty"><div class="av"></div><div><b>your clip here</b><small>post on X with the link</small></div><div class="v"><b>0</b><small>views</small></div></div>`
-    return `<a class="clip" href="${xUrl(k)}" target="_blank" rel="noopener"><div class="av" style="background-image:url('${esc(k.avatar)}')"></div>
-      <div><b>@${esc(k.handle)}</b><small>${k.paid > 0 ? sol(k.paid) + ' SOL paid' : k.status === 'ok' ? 'earning' : esc(k.status)}</small></div>
-      <div class="v"><b>${views(k.views)}</b><small>views</small></div></a>`
-  }
+  // ---------------------------------------------------------------- hero: the latest real payouts (or accepted clips)
   function hero() {
-    const top = (S?.clips || []).filter((k) => k.status === 'ok' || k.paid > 0).slice(0, 6)
-    const slot = (i) => clipCard(top[i])
-    $('slotsL').innerHTML = [0, 2, 4].map(slot).join(''); $('slotsR').innerHTML = [1, 3, 5].map(slot).join('')
-    $('hFunded').textContent = sol(S?.totals.funded || 0) + ' SOL'
-    wires(top.length)
+    const rows = []
+    for (const p of S?.payouts || []) for (const l of p.legs || []) if (rows.length < 5) {
+      const k = S.clips.find((x) => x.id === l.clip)
+      rows.push(`<a class="fi" href="${scan('tx', p.sig)}" target="_blank" rel="noopener">${k?.avatar ? `<img src="${esc(k.avatar)}" alt="" loading="lazy">` : '<span class="av"></span>'}<span class="w">@${esc(l.handle)}<small>${views(l.views)} views · ${ago(p.at)}</small></span><span class="amt">+${sol(l.sol)} SOL</span></a>`)
+    }
+    if (!rows.length) for (const k of (S?.clips || []).filter((x) => x.status === 'ok').slice(0, 5))
+      rows.push(`<a class="fi" href="${xUrl(k)}" target="_blank" rel="noopener"><img src="${esc(k.avatar)}" alt="" loading="lazy"><span class="w">@${esc(k.handle)}<small>${views(k.views)} views, earning</small></span><span class="amt">${sol(k.paid)} SOL</span></a>`)
+    $('feed').innerHTML = rows.length ? rows.join('') : `<div class="none">First payouts show up here, each with its Solana transaction.</div>`
+    $('feedNote').textContent = `every ${S?.rules.settleMin ?? 60} min`
   }
-  // a curve from the coin to each card; lit + flowing for real clips (SOL runs out from the escrow to the clipper)
-  function wires(live) {
-    const svg = $('wires'), st = $('stage'), box = st.getBoundingClientRect(), coin = st.querySelector('.coin').getBoundingClientRect()
-    if (getComputedStyle(svg).display === 'none') return
-    const cx = coin.left + coin.width / 2 - box.left, cy = coin.top + coin.height / 2 - box.top, r = coin.width / 2 + 8
-    const cards = [...$('slotsL').children, ...$('slotsR').children]
-    let html = ''
-    cards.forEach((el, i) => {
-      const b = el.getBoundingClientRect(), isL = i < 3, x = (isL ? b.right : b.left) - box.left, y = b.top + b.height / 2 - box.top
-      const sx = cx + (isL ? -r : r), sy = cy + (y - cy) * 0.18, mx = (sx + x) / 2
-      const d = `M${sx.toFixed(1)},${sy.toFixed(1)} C${mx.toFixed(1)},${sy.toFixed(1)} ${mx.toFixed(1)},${y.toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}`
-      const on = !el.classList.contains('empty')
-      html += `<path d="${d}" class="${on ? 'on' : ''}" id="w${i}"/>`
-      if (on) html += `<path d="${d}" class="flow"/><circle r="3"><animateMotion dur="${(2.2 + (i % 3) * 0.5).toFixed(1)}s" repeatCount="indefinite"><mpath href="#w${i}"/></animateMotion></circle>`
-      else html += `<circle r="2.4" opacity=".35"><animateMotion dur="${(5 + i * 0.4).toFixed(1)}s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#w${i}"/></animateMotion></circle>`
-    })
-    svg.innerHTML = html
-  }
-  window.addEventListener('resize', () => { clearTimeout(wires.t); wires.t = setTimeout(() => hero(), 120) })
 
   // ---------------------------------------------------------------- totals, rules
   function totals() {
-    const t = S.totals, set = (k, v) => { const el = document.querySelector(`#totals [data-k="${k}"]`); if (el) el.textContent = v }
-    set('funded', sol(t.funded)); set('paid', sol(t.paid)); set('views', views(t.views)); set('clips', t.clips); set('clippers', t.clippers)
-    const R = S.rules
+    const t = S.totals, R = S.rules
+    $('tPaid').textContent = sol(t.paid); $('tFunded').textContent = sol(t.funded); $('tViews').textContent = views(t.views); $('tClips').textContent = t.clips; $('tClippers').textContent = t.clippers
     document.querySelectorAll('[data-r="checkMin"]').forEach((e) => (e.textContent = R.checkMin)); document.querySelectorAll('[data-r="settleMin"]').forEach((e) => (e.textContent = R.settleMin))
-    document.querySelectorAll('[data-r="feePct"]').forEach((e) => (e.textContent = Math.round(R.fee * 100) + ' %'))
-    const rule = (k, b, s) => `<div><small>${k}</small><b>${b}</b><span>${s}</span></div>`
-    $('rules').innerHTML = [
-      rule('Payout', `every ${R.settleMin} min`, `new views since the last payout, at the campaign's rate`),
-      rule('Account age', `${R.minAgeDays}+ days`, 'younger X accounts can\'t earn'),
-      rule('Video', `${R.minSecs}+ seconds`, 'the post must carry a video and the campaign link'),
-      rule('Per account', `${Math.round(R.maxShare * 100)} % max`, 'of a campaign\'s funding, so no one account drains it'),
-      rule('Engagement', `${(R.minEng * 100).toFixed(1)} %+`, 'likes, replies, reposts per view; below it a clip is held'),
-      rule('Clips', `${R.maxClips} per account`, 'per campaign'),
-      rule('Protocol', `${Math.round(R.fee * 100)} % on top`, 'buys back and burns $CREATORPAY'),
-      rule('Refund', 'automatic', 'unspent budget returns to the creator when the campaign ends'),
-    ].join('')
+    document.querySelectorAll('[data-r="feePct"]').forEach((e) => (e.textContent = Math.round(R.fee * 100) + '%'))
+    $('rules').innerHTML = `<b>The rules.</b> X accounts must be ${R.minAgeDays}+ days old. A clip needs a video of ${R.minSecs}+ seconds and the campaign's link in the post. One account takes at most ${Math.round(R.maxShare * 100)}% of a campaign, with up to ${R.maxClips} clips. Clips past 2,000 views with under ${(R.minEng * 100).toFixed(1)}% engagement are held. ${Math.round(R.fee * 100)}% on top of every payout buys back and burns $CREATORPAY. Unspent SOL returns to the creator automatically.`
+    $('faqRules').textContent = `X accounts must be ${R.minAgeDays}+ days old, a clip needs a video of ${R.minSecs}+ seconds and the campaign link, one account can take at most ${Math.round(R.maxShare * 100)}% of a campaign, and clips whose views come with almost no likes, replies or reposts are held instead of paid.`
     $('tkWallet').innerHTML = `<a href="${scan('account', S.protocol)}" target="_blank" rel="noopener">${short(S.protocol)}</a>`
     $('tkFees').textContent = sol(t.protocol) + ' SOL'
   }
@@ -77,18 +46,18 @@
     sel.innerHTML = live.length ? live.map((c) => `<option value="${c.id}">${esc(c.title)} · ${sol(c.rate)} SOL / 1K</option>`).join('') : '<option value="">no live campaign yet</option>'
     if (cur && live.some((c) => c.id === cur)) sel.value = cur
     const cs = S.campaigns.filter((c) => c.status !== 'funding' || c.balance > 0 || (CPW.address && c.owner === CPW.address))
-    if (!cs.length) { $('campList').innerHTML = `<div class="empty-card"><b>No campaign yet.</b>The first one opens below, in "For creators". Its escrow and every payout will show here.</div>`; return }
+    if (!cs.length) { $('campList').innerHTML = `<div class="empty-card"><b>No campaign yet.</b>The first one opens below, under For creators. Its escrow and every payout will show here.</div>`; return }
     $('campList').innerHTML = cs.map((c) => {
       const spent = c.funded > 0 ? Math.min(100, ((c.paid + c.protocol) / c.funded) * 100) : 0, mine = CPW.address && c.owner === CPW.address
       const chip = c.status === 'live' ? `<span class="chip live">live</span>` : `<span class="chip">${esc(c.status)}</span>`
       return `<article class="camp"><header><div><h3>${esc(c.title)}</h3><a class="lk" href="https://${esc(c.link.replace(/^https?:\/\//, ''))}" target="_blank" rel="noopener">${esc(c.link.replace(/^https?:\/\//, ''))}</a></div>${chip}</header>
         <div class="rate">${sol(c.rate)} SOL<span>per 1,000 views</span></div>
-        <div class="bar" title="${spent.toFixed(1)} % paid out"><i style="width:${spent}%"></i></div>
+        <div class="meter" title="${spent.toFixed(1)}% paid out"><i style="width:${spent}%"></i></div>
         <div class="kv"><div><small>Funded</small><b>${sol(c.funded)}</b></div><div><small>Left</small><b>${sol(c.balance)}</b></div><div><small>Clips</small><b>${c.clips}</b></div><div><small>${c.status === 'closed' ? 'Ended' : 'Ends'}</small><b>${c.status === 'closed' ? ago(c.endsAt) : left(c.endsAt)}</b></div></div>
-        <footer>${c.status === 'live' ? `<button class="btn sm" data-submit="${c.id}">Submit a clip</button>` : ''}
-          <a class="btn ghost sm" href="${scan('account', c.escrow)}" target="_blank" rel="noopener">Escrow ${short(c.escrow)}</a>
-          ${mine && c.status === 'funding' ? `<button class="btn ghost sm" data-fund="${c.id}">Deposit</button>` : ''}
-          ${mine && ['live', 'funding'].includes(c.status) ? `<button class="btn ghost sm" data-close="${c.id}">Close and refund</button>` : ''}</footer></article>`
+        <footer>${c.status === 'live' ? `<button class="btn green sm" data-submit="${c.id}">Submit a clip</button>` : ''}
+          <a class="btn sm" href="${scan('account', c.escrow)}" target="_blank" rel="noopener">Escrow ${short(c.escrow)}</a>
+          ${mine && c.status === 'funding' ? `<button class="btn sm" data-fund="${c.id}">Deposit</button>` : ''}
+          ${mine && ['live', 'funding'].includes(c.status) ? `<button class="btn sm" data-close="${c.id}">Close and refund</button>` : ''}</footer></article>`
     }).join('')
   }
 
@@ -118,7 +87,7 @@
   function walletUi(a) {
     walletBtn.textContent = a ? short(a) : 'Connect wallet'
     document.querySelectorAll('[data-connect]').forEach((b) => (b.textContent = a ? 'Connected ' + short(a) : 'Connect wallet'))
-    $('intent').href = 'https://x.com/intent/post?text=' + encodeURIComponent(`Linking my wallet to CreatorPay: ${a || '<connect your wallet first>'}`)
+    $('intent').href = 'https://x.com/intent/post?text=' + encodeURIComponent(`Linking my wallet to @CreatorPayPump: ${a || '<connect your wallet first>'}`)
     if (S) campaigns()
   }
   window.addEventListener('cpw', (e) => walletUi(e.detail))
