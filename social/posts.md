@@ -13,7 +13,7 @@ So we built the part that makes the content.
 
 $CREATORPAY is live. Creators fund a campaign in SOL, clippers post short videos on X with their pump.fun link, and verified views pay out every hour.
 
-<site>
+creatorsonpump.vercel.app
 CA: <CA>
 
 ---
@@ -34,7 +34,7 @@ Got your pump.fun/join link?
 
 Open a campaign, set a rate per 1,000 views, deposit SOL. Unspent SOL comes back to you when it ends.
 
-<site>
+creatorsonpump.vercel.app
 
 ---
 
